@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>《细胞的分子生物学》读书会简明版</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#0F6B5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="细胞读书会">
+<meta name="description" content="用小学五年级就能看懂的话，讲《细胞的分子生物学》里最有用的想法。可以划线提问，把问题发给作者。">
+<style>
+/* Layout: one chapter per screen, sticky top bar, bottom bar appears when text is selected.
+   No web fonts or CDNs: everything is in this file so it opens fine in China and inside WeChat. */
+:root {
+  --bg: #F3F5F2;
+  --paper: #FFFFFF;
+  --ink: #1E2823;
+  --muted: #5B6A62;
+  --line: #DCE3DE;
+  --accent: #0F6B5E;
+  --accent-soft: #E0EFEB;
+  --mark: #FFE38A;
+  --mark-on: #F5C842;
+  --warn: #B4532A;
+  --font: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
+  --font-title: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "SimSun", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121815; --paper: #1A221E; --ink: #E4ECE7; --muted: #9BADA3; --line: #2C3832;
+    --accent: #6CC7B4; --accent-soft: #1F3530; --mark: #6A5A16; --mark-on: #8C7618; --warn: #E08A62;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.85 var(--font); }
+button { font: inherit; color: inherit; }
+.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+
+header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top); }
+header .wrap { display: flex; align-items: center; gap: 8px; padding-block: 10px; }
+.brand { flex: 1; min-width: 0; font: 700 1rem/1.3 var(--font-title); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbtn { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 6px 14px; font-size: .9rem; cursor: pointer; white-space: nowrap; }
+.tbtn b { color: var(--accent); }
+
+main .wrap { padding-block: 20px 120px; }
+article { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px; }
+.kicker { font-size: .85rem; color: var(--muted); margin: 0 0 4px; }
+h1 { font: 700 1.55rem/1.4 var(--font-title); margin: 0 0 18px; }
+h2.lbl { font-size: .9rem; font-weight: 700; color: var(--accent); margin: 22px 0 4px; letter-spacing: .05em; }
+p { margin: 0 0 10px; }
+.one { font: 700 1.2rem/1.7 var(--font-title); }
+ul, ol { margin: 0 0 10px; padding-left: 1.4em; }
+li { margin-bottom: 4px; }
+.example { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; }
+mark.hl { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1px; cursor: pointer; }
+mark.hl.on { background: var(--mark-on); }
+
+.task { display: flex; gap: 10px; align-items: flex-start; border: 1px dashed var(--line); border-radius: 10px; padding: 12px; cursor: pointer; }
+.task input { width: 22px; height: 22px; margin-top: 5px; accent-color: var(--accent); flex-shrink: 0; }
+
+.check { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
+.check p { color: var(--muted); font-size: .95rem; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 16px; cursor: pointer; font-size: .95rem; }
+.choice[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.hint { font-size: .85rem; color: var(--muted); }
+
+.pager { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
+.pbtn { flex: 1; border: 1px solid var(--line); background: var(--paper); border-radius: 12px; padding: 12px; cursor: pointer; text-align: left; font-size: .95rem; min-width: 0; }
+.pbtn.next { text-align: right; }
+.pbtn small { display: block; color: var(--muted); font-size: .8rem; }
+.pbtn[hidden] { visibility: hidden; display: block; }
+
+.toc a { display: flex; justify-content: space-between; gap: 10px; padding: 12px 4px; border-bottom: 1px solid var(--line); color: inherit; text-decoration: none; }
+.toc a:last-child { border-bottom: 0; }
+.toc .meta { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+
+/* Bottom bar: shows while text is selected, so phone users can ask about it. */
+.selbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 8; background: var(--ink); color: var(--paper); padding: 12px max(16px, env(safe-area-inset-left)) calc(12px + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 12px; justify-content: center; }
+.selbar button { background: var(--mark); color: #1E2823; border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 700; cursor: pointer; }
+.fab { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 6; background: var(--accent); color: var(--paper); border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.18); cursor: pointer; }
+
+.sheet-bg { position: fixed; inset: 0; z-index: 10; background: rgba(0,0,0,.4); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { width: 100%; max-width: 680px; max-height: 88vh; overflow: auto; background: var(--paper); border-radius: 16px 16px 0 0; padding: 18px max(16px, env(safe-area-inset-left)) calc(18px + env(safe-area-inset-bottom)); }
+.sheet h3 { margin: 0 0 8px; font: 700 1.15rem/1.4 var(--font-title); }
+.quote { border-left: 3px solid var(--mark-on); padding-left: 10px; color: var(--muted); margin: 0 0 12px; font-size: .95rem; }
+textarea, input[type="text"] { width: 100%; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 10px; padding: 10px; font: inherit; font-size: 1rem; }
+textarea { min-height: 96px; resize: vertical; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.btn { border: 1px solid var(--accent); background: var(--accent); color: var(--paper); border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.danger { background: transparent; border-color: var(--warn); color: var(--warn); }
+.note { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.note .q { margin: 4px 0 0; }
+.note a { color: var(--accent); font-size: .85rem; }
+.toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 999px; font-size: .9rem; z-index: 20; }
+button:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.install { display: flex; gap: 10px; align-items: center; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 14px; font-size: .9rem; line-height: 1.6; }
+.install span { flex: 1; }
+.install button { border: 0; background: var(--accent); color: var(--paper); border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+/* Tablets (iPad mini is 744px wide in portrait): a little larger text, roomier page, centered dialogs. */
+@media (min-width: 700px) {
+  body { font-size: 19px; }
+  .wrap { max-width: 720px; }
+  article { padding: 32px 36px; }
+  h1 { font-size: 1.75rem; }
+  .sheet-bg { align-items: center; }
+  .sheet { border-radius: 16px; max-width: 600px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">《细胞的分子生物学》读书会简明版</div>
+    <button class="tbtn" id="tocBtn">目录</button>
+    <button class="tbtn" id="myBtn">我的问题 <b id="myCount">0</b></button>
+  </div>
+</header>
+
+<main><div class="wrap" id="view"></div></main>
+
+<div class="selbar" id="selbar" hidden><span>选中了一段文字</span><button id="askBtn">对这段提问</button></div>
+<button class="fab" id="fab">提个问题</button>
+<div id="sheetRoot"></div>
+
+<script>
+// ---------- settings for whoever publishes this ----------
+const CONFIG = {
+  // Shown on the "我的问题" page so readers know where to send feedback.
+  sendTo: "把复制好的内容发给分享这个链接给你的朋友（微信就可以）。",
+  // Optional: a URL that accepts a JSON POST (for example a form service). Leave empty to use copy/share only.
+  feedbackUrl: "",
+};
+
+// ---------- content (plain-language guide written for this book club; not a translation of the book) ----------
+const INTRO = {
+  id: "intro", title: "怎么用这份讲义",
+  blocks: [
+    { p: "这是一份读书会讲义：用小学五年级就能看懂的话，讲布鲁斯·艾伯茨等人写的《细胞的分子生物学》（英文书名 Molecular Biology of the Cell，第7版）里最有用的想法，每章配一个生活例子和一个这周就能做的小练习。它不是原书的翻译，想读原文的朋友可以找中文版《细胞的分子生物学》。" },
+    { p: "这是全世界大学生物系最常用的课本之一，一千五百多页。我们只挑每章最重要的一个想法，讲你身体里几十万亿个细胞每天在干什么：怎么吃饭、怎么干活、怎么生病、怎么修好自己。" },
+    { p: "说明：这份讲义讲的是科学道理，不是看病指南。身体不舒服，请找医生。" },
+    { p: "每章都分四块，读一章大约5分钟：" },
+    { ol: ["一句话：这一章最重要的想法。", "大白话：用简单的话把它讲清楚。", "生活里的例子：放到工作和生活里，它是什么样子。", "这周试一试：一个小练习，做完打个勾。"] },
+    { p: "书分五大部分：细胞是什么（第1到3章）、基因怎么工作（第4到7章）、科学家怎么研究细胞（第8到9章）、细胞里面的结构（第10到18章）、细胞怎么一起组成身体（第19到24章）。第8、9章偏技术，看不懂可以先跳过。" },
+    { p: "看不懂的地方，用手指按住文字选中它，点下面的“对这段提问”，写下你的问题。所有问题都在右上角“我的问题”里，可以一键复制发给作者。" },
+  ],
+};
+
+const CHAPTERS = [
+  { n: "第1章", t: "所有生命都由细胞组成",
+    one: "从细菌到人，所有活的东西都由细胞组成，用的是同一套基因密码。",
+    plain: [{ p: "细胞是生命最小的单位。细菌只有一个细胞，人身上有几十万亿个。神奇的是，细菌、酵母、猫、狗和人，用的是同一套“写基因的文字”。所以科学家研究酵母和小鼠，学到的东西常常也能用在人身上。" }],
+    ex: "做馒头用的酵母、你家的猫、你自己，都是细胞组成的，而且基因用的是同一套“字母”。从这个意义上说，大家是远房亲戚。",
+    task: "这周找三样“活的”东西（比如盆栽、宠物、冰箱里的酸奶），想一想：它们都是由细胞组成的吗？" },
+  { n: "第2章", t: "细胞怎么用能量",
+    one: "细胞把食物“烧”成一种小电池（ATP），用它给所有工作供电。",
+    plain: [
+      { p: "细胞里大部分是水，剩下的是糖、脂肪、蛋白质这些分子。我们吃进去的饭，在细胞里被一点一点拆开，放出的能量装进一种叫ATP的小分子里。ATP就像充好电的小电池，细胞干什么都要用它。" },
+      { p: "细胞里还有很多“酶”，它们能让化学反应快上千万倍，又不会把细胞烧坏。" },
+    ],
+    ex: "跑一天外卖，身体用掉的能量全来自吃进去的饭。饭吃得不够，下午就没劲，就像电动车没电了跑不动。",
+    task: "记下今天吃的三顿饭，想一想哪一顿让你最有劲，哪一顿吃完最困。" },
+  { n: "第3章", t: "蛋白质：细胞里的工人",
+    one: "蛋白质是细胞里干活的工人，它的形状决定它能干什么。",
+    plain: [{ p: "蛋白质是用20种小零件（氨基酸）串成的长链，串好以后会折成特定的形状。形状对了，它才能干活：有的搬东西，有的当开关，有的当酶。形状坏了，蛋白质就不管用了。" }],
+    ex: "就像拼乐高：同样几十种积木，按说明书拼成不同的形状，就成了车、房子或飞机。鸡蛋煮熟后蛋清变白变硬，就是里面的蛋白质被热变了形。",
+    task: "看一样你常吃的食物包装，找出每100克里有多少蛋白质，写下来。" },
+  { n: "第4章", t: "DNA：一本超长的说明书",
+    one: "DNA是用四个字母写成的说明书，装着做一个人需要的全部信息。",
+    plain: [{ p: "DNA像一条拧起来的梯子，用A、T、C、G四个“字母”写成。人的一整套DNA大约有30亿对字母，分成23对染色体，里面有大约两万个基因。每个细胞里的DNA拉直了大约有两米长，却被整整齐齐地叠进比针尖还小得多的细胞核里。" }],
+    ex: "像把一根两米长的数据线，整整齐齐绕好塞进一颗芝麻里，用的时候还能随时找到要的那一段。",
+    task: "问问家人：家里谁和谁长得最像？写下你觉得自己从爸妈那里继承了哪些特点。" },
+  { n: "第5章", t: "复制DNA，修补DNA",
+    one: "细胞分裂前要把DNA抄一遍，抄错了或被弄坏了，细胞会自己修。",
+    plain: [{ p: "细胞每分裂一次，就要把30亿对字母完整抄一遍，而且几乎不出错，因为它边抄边检查。紫外线、烟里的有害物质都会弄坏DNA，细胞有好几套“修理队”专门修补。但修理队也会累，伤害太多、太久，就可能修不好。" }],
+    ex: "抽烟时，烟里的有害物质会不停地伤害肺里细胞的DNA。少抽一根，修理队就少一份活。",
+    task: "这周记下你每天晒太阳的时间，想一想：有没有需要戴帽子或涂防晒的时候？" },
+  { n: "第6章", t: "从DNA到蛋白质",
+    one: "细胞先把DNA上的一段抄成RNA，再照着RNA做出蛋白质。",
+    plain: [
+      { p: "DNA这本说明书一直锁在细胞核里，不能拿出去。要用哪一页，就先抄一份副本，叫RNA，送到核外面。外面的“装配机”（核糖体）照着RNA，三个字母一组读，把氨基酸一个个接起来，做成蛋白质。" },
+      { p: "新冠疫苗里有一种叫mRNA疫苗，就是给细胞送去一份临时的RNA“说明书”，让细胞做出一点病毒的蛋白，教身体认识敌人。" },
+    ],
+    ex: "就像饭店：总菜谱锁在办公室（DNA），厨房要做哪道菜，就复印那一页送进去（RNA），厨师照着做出菜（蛋白质）。",
+    task: "用自己的话，给家人或同事讲一遍“DNA→RNA→蛋白质”，看他听懂没有。" },
+  { n: "第7章", t: "基因的开关",
+    one: "每个细胞的DNA都一样，不同的是哪些基因打开、哪些关上。",
+    plain: [{ p: "你的肝细胞和肌肉细胞，DNA完全一样，长得和干的活却完全不同。秘密在于“开关”：每种细胞只打开自己需要的那些基因，其他的关着。吃的东西、运动、压力，都会影响一些基因的开和关。" }],
+    ex: "同一本总菜谱，川菜馆只做川菜那几页，早餐店只做早点那几页。菜谱一样，菜单不同。",
+    task: "想一想：你这周的作息（睡觉、吃饭、运动）里，哪一件事最可能在“调”你身体的开关？写下来。" },
+  { n: "第8章", t: "科学家怎么研究细胞",
+    one: "研究细胞要做公平的比较：只改一样东西，其他都一样。",
+    plain: [{ p: "科学家把细胞放在培养皿里养，把某个基因关掉或改掉，看会发生什么。现在有一种叫CRISPR的工具，像一把“基因剪刀”，能很准地改DNA上的某个字母。不管用什么工具，道理都一样：要有对照组，一次只改一样东西，结果才说得清。" }],
+    ex: "想知道新的蛋白粉有没有用？两个月里吃的、练的、睡的都不变，只多加蛋白粉，再看变化，才算公平的比较。",
+    task: "这周选一件小事做个“实验”：比如两天早睡、两天晚睡，只改这一样，记下第二天的精神。" },
+  { n: "第9章", t: "看见细胞",
+    one: "细胞太小，眼睛看不见，要靠显微镜和会发光的“标签”。",
+    plain: [{ p: "大多数细胞比头发丝还细好几倍，要用显微镜才能看到。科学家还会给蛋白质贴上会发光的标签，比如从水母身上找到的绿色荧光蛋白，这样就能看到某个蛋白在细胞里跑到哪儿去了。更厉害的电子显微镜，连单个蛋白质的形状都能看清。" }],
+    ex: "就像手机拍照放大：放到一定程度就糊了。显微镜就是能放大几百、几千倍还看得清的“相机”。",
+    task: "用手机相机放大，拍一张你能拍到的最小的东西（一粒盐、一根头发），看看能放多大。" },
+  { n: "第10章", t: "细胞膜：一层油做的皮",
+    one: "每个细胞外面都包着一层很薄的油膜，把里外分开。",
+    plain: [{ p: "细胞膜主要由一种一头怕水、一头喜水的油分子排成两层，像肥皂泡的泡泡皮。它很薄，又会流动，破个小口还能自己合上。膜上插着很多蛋白质，当门、当天线。" }],
+    ex: "汤上漂的油花自己会聚在一起，不跟水混。细胞膜就是利用油和水“合不来”的道理，把细胞包起来。",
+    task: "往一碗水里滴几滴油，搅一搅再停下，看油是怎么聚在一起的。" },
+  { n: "第11章", t: "进出细胞的门和泵",
+    one: "细胞膜上有门和泵，管着盐、糖这些小东西进出，还能产生电。",
+    plain: [{ p: "盐、糖、水不能随便穿过细胞膜，要走专门的“门”（通道）或被“泵”主动搬进搬出。泵要花很多能量。细胞膜两边的盐分不一样多，就产生了电压，神经和肌肉就是靠这种电来传信号的。" }],
+    ex: "健身教练常提醒学员：大量出汗会丢掉盐分，而这些盐对神经和肌肉传信号很重要。所以练得久、出汗多，不能只喝白水。",
+    task: "这周运动或出大汗以后，留意一下你喝了什么，记下来。" },
+  { n: "第12章", t: "细胞里的房间和地址",
+    one: "细胞里分成很多小房间，每个蛋白质都带着“地址”，被送到该去的地方。",
+    plain: [{ p: "人和动物的细胞里有很多小房间（细胞器）：细胞核放DNA，线粒体发电，还有专门加工和打包的车间。新做好的蛋白质身上带着一小段“地址码”，细胞照着地址把它送到对的房间。地址错了，蛋白质就会被送错地方，干不了活。" }],
+    ex: "就像酒店：客房、厨房、洗衣房、前台各管一摊。新来的员工拿着工牌上写的部门去报到，走错了就帮不上忙。",
+    task: "画一张你工作地方的简单平面图，标出每个区域是干什么的。" },
+  { n: "第13章", t: "细胞里的快递",
+    one: "细胞用小泡泡打包东西，在里面送来送去，也往外送、往里收。",
+    plain: [{ p: "细胞里有很多小泡泡，像快递包裹，把蛋白质从一个房间送到另一个房间，或者送出细胞，比如胰岛素就是这样被送出去的。细胞也会把外面的东西包起来“收件”。还有专门的“回收站”（溶酶体），把旧东西拆开再利用。" }],
+    ex: "外卖骑手从店里取餐、按地址送到客人手里，用完的餐盒再进回收站。细胞里每秒都在跑成千上万单这样的“外卖”。",
+    task: "这周数一数你一天送了（或收了）多少件东西，想想细胞一秒就要送多少。" },
+  { n: "第14章", t: "线粒体：细胞的发电厂",
+    one: "线粒体用氧气把食物里的能量变成ATP，是细胞的发电厂。",
+    plain: [
+      { p: "我们呼吸要吸氧气，就是为了给线粒体用。线粒体把食物分解出来的东西和氧气一起“烧”，做出大量ATP。线粒体很特别：它有自己的一小段DNA，而且只从妈妈那里遗传。科学家认为，它很久很久以前是一种细菌，后来住进了别的细胞里。" },
+      { p: "植物细胞里还有叶绿体，能用阳光把水和二氧化碳做成糖。" },
+    ],
+    ex: "坚持有氧训练，肌肉细胞里的线粒体会变多，所以练久了爬楼不喘、骑车更有劲。这是私教可以讲给学员听的科学道理。",
+    task: "这周试一次10分钟的快走或慢骑，注意自己什么时候开始喘，记下来，几周后再比一比。" },
+  { n: "第15章", t: "细胞之间怎么传话",
+    one: "细胞靠化学信号互相传话，收到信号的细胞会改变自己的行为。",
+    plain: [{ p: "细胞会放出信号分子，别的细胞用表面的“接收器”收到后，里面会传出一连串反应。比如受到惊吓时，身体放出肾上腺素，心跳加快、手脚有劲。很多药、很多会上瘾的东西，都是在冒充或干扰这些信号。" }],
+    ex: "香烟里的尼古丁，会冒充大脑里的一种信号分子，让大脑觉得舒服，所以一停就难受。戒烟难，不是你意志差，是大脑的传话系统被“借用”了。",
+    task: "这周记下你最想抽烟（或刷手机）的三个时刻，看看当时身体在传什么“信号”：累、烦、还是无聊？" },
+  { n: "第16章", t: "细胞的骨架和轨道",
+    one: "细胞里有一套会变形的骨架，撑住形状，还当运货的轨道。",
+    plain: [{ p: "细胞里有三种长长的蛋白丝，组成细胞骨架：撑住细胞的形状，帮细胞爬行和分裂，还当“轨道”，小马达蛋白背着货物沿着轨道走。肌肉收缩，就是两种蛋白丝互相滑动、拉近。" }],
+    ex: "你在健身房举起一个哑铃，是肌肉细胞里无数根蛋白丝同时互相拉动的结果，每一下都要用掉ATP。",
+    task: "做10个深蹲或俯卧撑，边做边想：现在我的肌肉细胞里，蛋白丝正在一拉一放。" },
+  { n: "第17章", t: "细胞怎么一分为二",
+    one: "细胞分裂前要长大、复制DNA、层层检查，确认没问题才一分为二。",
+    plain: [{ p: "细胞分裂有固定的步骤：先长大，再把DNA抄一份，然后把两份平均分到两个新细胞里。每一步之间都有“检查站”：DNA没抄完、有损坏，就停下来先修。检查站坏了，细胞乱分裂，就可能变成癌症。" }],
+    ex: "就像饭店开门前要备菜、检查卫生和设备，每一项都过关才营业。跳过检查硬开门，迟早出事。",
+    task: "写下你上班前的一套“检查清单”（比如电池满了吗、头盔戴了吗），这周每天照着过一遍。" },
+  { n: "第18章", t: "细胞也会按计划死去",
+    one: "细胞会按计划、干干净净地“自杀”，这对身体是好事。",
+    plain: [{ p: "身体每天都有大量细胞按计划死去，这叫“细胞凋亡”。它们死得很整齐：自己拆成小块，被别的细胞收走，不会弄脏周围。在妈妈肚子里时，手指之间原本连着，就是靠这些细胞按时死去，才分出了五根手指。坏了、老了、有危险的细胞也会被这样清掉。" }],
+    ex: "就像餐厅每天打烊后把过期食材扔掉，不是浪费，是为了让第二天的菜安全新鲜。",
+    task: "清理一样“该淘汰”的东西：手机里没用的软件、冰箱里过期的食物，或一个坏习惯。" },
+  { n: "第19章", t: "细胞怎么粘在一起",
+    one: "细胞靠“接头”互相连住，外面还有一层像钢筋的网把它们撑起来。",
+    plain: [{ p: "细胞之间有各种“接头”：有的像铆钉，把细胞钉在一起；有的像密封条，不让东西漏过去；有的像小门，让相邻细胞互相传东西。细胞外面还有一张网，叫细胞外基质，主要材料是胶原蛋白，它是身体里最多的蛋白质，让皮肤有弹性、让肌腱和骨头结实。" }],
+    ex: "做胶原蛋白需要维生素C。以前远洋的水手吃不到新鲜蔬果，会牙龈出血、伤口好不了，就是因为缺维生素C，胶原蛋白做不好。",
+    task: "这周每天吃一份新鲜蔬菜或水果，记下来。" },
+  { n: "第20章", t: "癌症：不听指挥的细胞",
+    one: "癌症是细胞的DNA坏了很多处，开始不听指挥地乱长。",
+    plain: [{ p: "正常细胞该长才长、该停就停、该死就死。当DNA上积累了好几处损坏，细胞就可能不听信号、无限分裂，还会跑到别处去，这就是癌症。多数癌症要很多年慢慢形成，所以减少伤害、早发现，都很有用。" }],
+    ex: "大部分肺癌都和抽烟有关。好消息是：戒烟以后，得肺癌的风险会随着年份慢慢降下来，什么时候戒都不算晚。",
+    task: "查一查你的单位或社区有没有免费体检，或者问一位家人上一次体检是什么时候。" },
+  { n: "第21章", t: "一个细胞长成一个人",
+    one: "一个受精卵不断分裂、分工，最后长成有几十万亿个细胞的人。",
+    plain: [{ p: "每个人都从一个细胞开始。这个细胞不断分裂，新细胞之间互相发信号，告诉对方“你在头那边”“你在手那边”，于是它们打开不同的基因，变成不同的细胞。很多控制身体长成什么样的基因，在果蝇、老鼠和人身上都差不多。" }],
+    ex: "孩子在妈妈肚子里的前几个月，是器官成形的关键时候，所以怀孕时要远离烟酒，家里人也别在孕妇身边抽烟。",
+    task: "翻出一张孩子（或你自己）小时候的照片，和现在比一比，写下变化最大的三个地方。" },
+  { n: "第22章", t: "干细胞：身体的维修队",
+    one: "身体里有干细胞，能不断补充新细胞，修好用旧了、受伤的地方。",
+    plain: [{ p: "很多组织一直在“换新”：肠子内壁几天就换一批，皮肤几周就换一层，血细胞也在不停更新。负责补货的是干细胞，它们既能复制自己，又能变成需要的细胞。骨髓移植就是把健康的造血干细胞送进病人体内。" }],
+    ex: "力量训练后肌肉酸，是肌肉有了细小的损伤。肌肉里的干细胞会来帮忙修补，修好以后肌肉更强，所以休息和睡觉也是训练的一部分。",
+    task: "这周至少有三天睡够7个小时，记下来，看看练完以后恢复得怎么样。" },
+  { n: "第23章", t: "细菌和病毒怎么让人生病",
+    one: "细菌和病毒会钻进身体、借用我们的细胞，抗生素只对细菌有用。",
+    plain: [{ p: "让人生病的有细菌、病毒、真菌和寄生虫。病毒自己不会繁殖，要钻进我们的细胞，借细胞的机器复制自己。抗生素能杀细菌，但对病毒没用；感冒大多是病毒引起的，乱吃抗生素不但没用，还会让细菌变得更难对付。" }],
+    ex: "勤洗手、做饭生熟分开，能挡掉很多细菌。家里的狗按时打狂犬疫苗，是保护它，也保护家里人。",
+    task: "这周饭前、上完厕所、回家后，都认真洗20秒手，大约是唱两遍《生日快乐》的时间。" },
+  { n: "第24章", t: "免疫系统：身体的保安",
+    one: "身体有快速反应的保安，也有会记住敌人的特种兵，疫苗就是提前训练。",
+    plain: [
+      { p: "免疫系统分两层。第一层反应快，一发现外来的东西就动手，发烧、红肿常常是它在干活。第二层慢一些，但会“认人”：做出专门对付这个敌人的抗体，还会留下记忆细胞，下次再来，很快就能消灭它。" },
+      { p: "疫苗就是让身体先认识一下敌人的样子，提前练好兵，真遇到时就不容易病重。" },
+    ],
+    ex: "很多人小时候出过水痘，以后一般不会再得，因为免疫系统记住了它。孩子按时打疫苗，就是提前给身体存好“敌人档案”。",
+    task: "找出家里的疫苗本（自己的或孩子的），看看最近一针是什么时候、下一针该什么时候打。" },
+];
+
+const CLUB = {
+  id: "club", title: "读书会怎么开",
+  blocks: [
+    { p: "每周一次，每次30分钟，当面或视频都可以。人不用多，两三个就够。" },
+    { ol: ["先聊上周（5分钟）：上周的“试一试”做了没有？发生了什么？", "一起读（10分钟）：轮流读这周的一两章。", "聊三个问题（10分钟）：这一章哪句话你最惊讶？哪句没看懂？你的身体或生活里有没有类似的例子？如果只能记住一个想法，你选哪个？", "定下周的小行动（5分钟）：每个人说出自己这周要试的一件事。"] },
+    { p: "小提醒：只问问题、不讲大道理；读书会里不推荐药和保健品，身体有问题请找医生；这不是考试，是朋友一起变好的时间。" },
+  ],
+};
+CHAPTERS.forEach((c, i) => { c.id = "c" + (i + 1); });
+const PAGES = [INTRO, ...CHAPTERS, CLUB];
+const pageIdx = (id) => PAGES.findIndex((p) => p.id === id);
+const pageName = (p) => p.n ? `${p.n}　${p.t}` : p.title;
+
+// ---------- reader data, kept only on this phone ----------
+const KEY = "cell-bookclub-v1";
+let state = { notes: [], tasks: {}, level: {}, name: "", last: "intro" };
+try { state = Object.assign(state, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+if (!state.reader) state.reader = "r" + Math.random().toString(36).slice(2, 10);
+// With CONFIG.feedbackUrl set, every save is also sent to the organizer (batched a few seconds), so readers don't have to send anything.
+let syncTimer = null;
+function autoSend() {
+  if (!CONFIG.feedbackUrl) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    fetch(CONFIG.feedbackUrl, { method: "POST", headers: { "Content-Type": "application/json" }, keepalive: true,
+      body: JSON.stringify({ reader: state.reader, name: state.name, notes: state.notes, level: state.level, tasks: state.tasks, text: feedbackText(), at: new Date().toISOString() }) })
+      .then((r) => { state.sentAt = r.ok ? new Date().toISOString() : state.sentAt; persist(); })
+      .catch(() => {});
+  }, 3000);
+}
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+const save = () => { persist(); autoSend(); };
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+let pidSeq = 0;
+const para = (cls, html) => `<p data-pid="${pidSeq++}"${cls ? ` class="${cls}"` : ""}>${html}</p>`;
+function blocksHTML(blocks) {
+  return blocks.map((b) => {
+    if (b.p) return para("", esc(b.p));
+    const tag = b.ol ? "ol" : "ul";
+    return `<${tag}>${(b.ol || b.ul).map((x) => `<li data-pid="${pidSeq++}">${esc(x)}</li>`).join("")}</${tag}>`;
+  }).join("");
+}
+
+// ---------- views ----------
+const LEVELS = ["都看懂了", "有一点难", "很多看不懂"];
+function renderPage(id) {
+  const i = Math.max(0, pageIdx(id));
+  const pg = PAGES[i];
+  state.last = pg.id; persist();
+  pidSeq = 0;
+  let body;
+  if (pg.n) {
+    body = `<p class="kicker">${esc(pg.n)}</p><h1>${esc(pg.t)}</h1>
+      <h2 class="lbl">一句话</h2>${para("one", esc(pg.one))}
+      <h2 class="lbl">大白话</h2>${blocksHTML(pg.plain)}
+      <h2 class="lbl">生活里的例子</h2>${para("example", esc(pg.ex))}
+      <h2 class="lbl">这周试一试</h2>
+      <label class="task"><input type="checkbox" id="taskBox" ${state.tasks[pg.id] ? "checked" : ""}><span data-pid="${pidSeq++}">${esc(pg.task)}</span></label>
+      <div class="check"><p>这一章你看懂了吗？（作者会根据大家的回答改进讲义）</p>
+        <div class="choices">${LEVELS.map((l, k) => `<button class="choice" data-level="${k}" aria-pressed="${state.level[pg.id] === k}">${l}</button>`).join("")}</div>
+        <p class="hint" style="margin-top:10px">哪里看不懂？按住文字选中它，点“对这段提问”。</p>
+      </div>`;
+  } else {
+    body = `<h1>${esc(pg.title)}</h1>${blocksHTML(pg.blocks)}`;
+  }
+  const prev = PAGES[i - 1], next = PAGES[i + 1];
+  $("#view").innerHTML = `<article id="art" data-page="${pg.id}">${body}</article>
+    <div class="pager">
+      <button class="pbtn" id="prevBtn" ${prev ? "" : "hidden"}><small>上一篇</small>${prev ? esc(pageName(prev)) : ""}</button>
+      <button class="pbtn next" id="nextBtn" ${next ? "" : "hidden"}><small>下一篇</small>${next ? esc(pageName(next)) : ""}</button>
+    </div>`;
+  if (prev) $("#prevBtn").onclick = () => go(prev.id);
+  if (next) $("#nextBtn").onclick = () => go(next.id);
+  const tb = $("#taskBox");
+  if (tb) tb.onchange = () => { state.tasks[pg.id] = tb.checked; save(); };
+  document.querySelectorAll("[data-level]").forEach((b) => b.onclick = () => {
+    const k = Number(b.dataset.level);
+    state.level[pg.id] = state.level[pg.id] === k ? undefined : k; save();
+    document.querySelectorAll("[data-level]").forEach((x) => x.setAttribute("aria-pressed", String(state.level[pg.id] === Number(x.dataset.level))));
+    if (k > 0 && state.level[pg.id] === k) toast("谢谢！可以选中看不懂的文字提个问题。");
+  });
+  applyHighlights(pg.id);
+  window.scrollTo(0, 0);
+}
+function renderToc() {
+  $("#view").innerHTML = `<article><h1>目录</h1><nav class="toc">${PAGES.map((p) => {
+    const n = state.notes.filter((x) => x.page === p.id).length;
+    const meta = [state.tasks[p.id] ? "已练习" : "", n ? `${n}个问题` : ""].filter(Boolean).join(" · ");
+    return `<a href="#${p.id}" data-go="${p.id}"><span>${esc(pageName(p))}</span><span class="meta">${meta}</span></a>`;
+  }).join("")}</nav></article>`;
+  window.scrollTo(0, 0);
+}
+// Navigation is driven by the page itself; the #hash is only kept in sync where the browser allows it
+// (some in-app viewers block hash changes, which broke the contents and previous/next buttons).
+let current = (() => { try { return location.hash.slice(1); } catch (e) { return ""; } })() || state.last;
+function go(id) {
+  current = id;
+  route();
+  try { if (location.hash.slice(1) !== id) history.pushState(null, "", "#" + id); } catch (e) {}
+}
+function route() {
+  if (current === "toc") renderToc();
+  else renderPage(pageIdx(current) >= 0 ? current : state.last);
+  $("#myCount").textContent = state.notes.length;
+}
+window.addEventListener("hashchange", () => { const id = location.hash.slice(1); if (id && id !== current) { current = id; route(); } });
+window.addEventListener("popstate", () => { const id = location.hash.slice(1) || state.last; if (id !== current) { current = id; route(); } });
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("[data-go]");
+  if (!a) return;
+  e.preventDefault();
+  closeSheet();
+  go(a.dataset.go);
+});
+$("#tocBtn").onclick = () => go("toc");
+$("#myBtn").onclick = openMine;
+
+// ---------- highlights ----------
+function textNodes(el) {
+  const out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  while (w.nextNode()) out.push(w.currentNode);
+  return out;
+}
+function wrapText(el, text, noteId) {
+  const nodes = textNodes(el);
+  const full = nodes.map((n) => n.nodeValue).join("");
+  const start = full.indexOf(text);
+  if (start < 0 || !text) return;
+  const end = start + text.length;
+  let pos = 0;
+  nodes.forEach((n) => {
+    const a = pos, b = pos + n.nodeValue.length;
+    pos = b;
+    const s = Math.max(start, a), e = Math.min(end, b);
+    if (s >= e) return;
+    const r = document.createRange();
+    r.setStart(n, s - a); r.setEnd(n, e - a);
+    const m = document.createElement("mark");
+    m.className = "hl"; m.dataset.note = noteId;
+    r.surroundContents(m);
+  });
+}
+function applyHighlights(page) {
+  state.notes.filter((x) => x.page === page).forEach((x) => {
+    const el = document.querySelector(`#art [data-pid="${x.pid}"]`);
+    if (el) wrapText(el, x.text, x.id);
+  });
+}
+document.addEventListener("click", (e) => {
+  const m = e.target.closest("mark.hl");
+  if (m && !hasSelection()) { e.preventDefault(); openNote(state.notes.find((x) => x.id === m.dataset.note)); }
+});
+
+// ---------- selecting text to ask ----------
+let pending = null;
+function hasSelection() { const s = window.getSelection(); return s && !s.isCollapsed && s.toString().trim().length > 0; }
+function readSelection() {
+  const s = window.getSelection();
+  if (!s || s.isCollapsed) return null;
+  const text = s.toString().replace(/\s+/g, " ").trim();
+  if (!text) return null;
+  const node = (n) => (n.nodeType === 1 ? n : n.parentElement);
+  const a = node(s.anchorNode)?.closest("[data-pid]"), b = node(s.focusNode)?.closest("[data-pid]");
+  const art = $("#art");
+  if (!art || !a || !art.contains(a)) return null;
+  // A selection across paragraphs is kept as the part inside the first one.
+  const el = a;
+  const inEl = a === b ? text : (el.textContent.includes(text) ? text : text.slice(0, 60));
+  return { page: art.dataset.page, pid: Number(el.dataset.pid), text: el.textContent.includes(inEl) ? inEl : el.textContent.slice(0, 60) };
+}
+document.addEventListener("selectionchange", () => {
+  const sel = readSelection();
+  pending = sel;
+  $("#selbar").hidden = !sel;
+  $("#fab").hidden = !!sel;
+});
+$("#askBtn").addEventListener("mousedown", (e) => e.preventDefault());
+$("#askBtn").onclick = () => {
+  const sel = pending || readSelection();
+  if (!sel) return;
+  window.getSelection().removeAllRanges();
+  $("#selbar").hidden = true; $("#fab").hidden = false;
+  openNote(null, sel);
+};
+$("#fab").onclick = () => {
+  const art = $("#art");
+  openNote(null, { page: art ? art.dataset.page : "intro", pid: -1, text: "" });
+};
+
+// ---------- sheets ----------
+function sheet(html) {
+  const root = $("#sheetRoot");
+  root.innerHTML = `<div class="sheet-bg" id="sbg"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  $("#sbg").addEventListener("click", (e) => { if (e.target.id === "sbg") closeSheet(); });
+  return root;
+}
+function closeSheet() { $("#sheetRoot").innerHTML = ""; }
+function openNote(note, sel) {
+  const isNew = !note;
+  const data = note || { id: "n" + Date.now().toString(36), page: sel.page, pid: sel.pid, text: sel.text, q: "", at: new Date().toISOString() };
+  const pg = PAGES[pageIdx(data.page)];
+  sheet(`<h3>${isNew ? "提一个问题" : "我的问题"}</h3>
+    <p class="hint">${esc(pageName(pg))}</p>
+    ${data.text ? `<p class="quote">${esc(data.text)}</p>` : ""}
+    <textarea id="qBox" placeholder="哪里看不懂？或者你想到了什么？随便写，写一半也行。">${esc(data.q)}</textarea>
+    <div class="row">
+      <button class="btn" id="saveQ">保存</button>
+      <button class="btn ghost" id="cancelQ">取消</button>
+      ${isNew ? "" : `<button class="btn danger" id="delQ">删除</button>`}
+    </div>`);
+  const box = $("#qBox");
+  setTimeout(() => box.focus(), 50);
+  $("#cancelQ").onclick = closeSheet;
+  $("#saveQ").onclick = () => {
+    data.q = box.value.trim();
+    if (!data.q && !data.text) { closeSheet(); return; }
+    if (isNew) state.notes.push(data);
+    save(); closeSheet(); route();
+    toast("已保存。在“我的问题”里可以发给作者。");
+  };
+  if (!isNew) $("#delQ").onclick = () => { state.notes = state.notes.filter((x) => x.id !== data.id); save(); closeSheet(); route(); };
+}
+
+// ---------- my questions + send to the author ----------
+function feedbackText() {
+  const lines = [`《细胞的分子生物学》读书会简明版 · 读者反馈`, `读者：${state.name || "（没留名字）"}`, ""];
+  PAGES.forEach((p) => {
+    const notes = state.notes.filter((x) => x.page === p.id);
+    const lvl = state.level[p.id];
+    if (!notes.length && lvl === undefined && !state.tasks[p.id]) return;
+    lines.push(`【${pageName(p)}】`);
+    if (lvl !== undefined) lines.push(`看懂了吗：${LEVELS[lvl]}`);
+    if (state.tasks[p.id]) lines.push(`这周试一试：做了`);
+    notes.forEach((x) => {
+      if (x.text) lines.push(`· 划线：「${x.text}」`);
+      lines.push(`  问题：${x.q || "（没写问题）"}`);
+    });
+    lines.push("");
+  });
+  return lines.join("\n").trim();
+}
+function openMine() {
+  const notes = state.notes;
+  sheet(`<h3>我的问题（${notes.length}）</h3>
+    ${notes.length ? notes.map((x) => {
+      const p = PAGES[pageIdx(x.page)];
+      return `<div class="note"><a href="#${x.page}" data-go="${x.page}">${esc(pageName(p))}</a>${x.text ? `<p class="quote" style="margin:4px 0 0">${esc(x.text)}</p>` : ""}<p class="q">${esc(x.q || "（没写问题）")}</p></div>`;
+    }).join("") : `<p class="hint">还没有问题。读的时候按住文字选中，点“对这段提问”。</p>`}
+    <h3 style="margin-top:18px">发给作者</h3>
+    <p class="hint">${CONFIG.feedbackUrl ? "你的问题保存后会自动发给作者，不用再做什么。下面的按钮可以再发一份到微信。" : esc(CONFIG.sendTo)}</p>
+    <input type="text" id="nameBox" placeholder="你的名字或昵称（可以不填）" value="${esc(state.name)}">
+    <div class="row">
+      <button class="btn" id="sendBtn">复制，去微信发送</button>
+      ${navigator.share ? `<button class="btn ghost" id="shareBtn">用其他方式分享</button>` : ""}
+      <button class="btn ghost" id="closeMine">关闭</button>
+    </div>
+    <textarea id="fbText" readonly style="margin-top:12px;min-height:140px" aria-label="要发送的内容"></textarea>
+    <p class="hint">复制不成功的话，可以长按上面的文字全选复制。</p>`);
+  const fb = $("#fbText");
+  const refresh = () => { state.name = $("#nameBox").value.trim(); save(); fb.value = feedbackText(); };
+  refresh();
+  $("#nameBox").oninput = refresh;
+  $("#closeMine").onclick = closeSheet;
+  $("#sendBtn").onclick = async () => {
+    refresh();
+    if (CONFIG.feedbackUrl) {
+      try { await fetch(CONFIG.feedbackUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: state.name, text: fb.value, notes: state.notes, level: state.level, tasks: state.tasks }) }); toast("已发送，谢谢！"); return; } catch (e) {}
+    }
+    if (await copy(fb.value)) toast("已复制，打开微信粘贴发送就行。");
+    else { fb.focus(); fb.select(); toast("请长按文字，选“全选”再复制。"); }
+  };
+  const sb = $("#shareBtn");
+  if (sb) sb.onclick = () => { refresh(); navigator.share({ title: "读书会反馈", text: fb.value }).catch(() => {}); };
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  try {
+    const t = document.createElement("textarea");
+    t.value = text; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0";
+    document.body.appendChild(t); t.select(); t.setSelectionRange(0, text.length);
+    const ok = document.execCommand("copy"); t.remove(); return ok;
+  } catch (e) { return false; }
+}
+let toastTimer;
+function toast(msg) {
+  let t = $(".toast");
+  if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 2600);
+}
+
+route();
+
+// ---------- install as a home-screen app ----------
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+(function installHint() {
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (standalone || state.hideInstall) return;
+  const ua = navigator.userAgent;
+  let how;
+  if (/MicroMessenger/i.test(ua)) how = "点右上角“⋯”，选“在浏览器打开”，再把它添加到主屏幕。";
+  else if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) how = "点下方的“分享”按钮，选“添加到主屏幕”。";
+  else if (/Android/i.test(ua)) how = "点浏览器菜单“⋮”，选“添加到主屏幕”或“安装应用”。";
+  else return;
+  const bar = document.createElement("div");
+  bar.className = "install";
+  bar.innerHTML = `<span><b>放到手机桌面，像App一样打开：</b>${how}</span><button aria-label="关闭">知道了</button>`;
+  const box = document.createElement("div");
+  box.className = "wrap"; box.style.paddingTop = "16px";
+  box.appendChild(bar);
+  bar.querySelector("button").onclick = () => { state.hideInstall = true; persist(); box.remove(); };
+  document.querySelector("main").prepend(box);
+})();
+</script>
+</body>
+</html>
